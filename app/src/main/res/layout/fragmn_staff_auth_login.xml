@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/colorPrimary">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerVertical="true">
+        <ImageView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center"
+            android:src="@drawable/logo_staff"
+            android:scaleType="centerInside" />
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="24dp"
+            android:stretchColumns="*">
+            <TableRow>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/staff_auth_userid"
+                        android:hint="아이디를 입력하세요."
+                        android:background="@color/orignal_white"
+                        android:padding="8dp"
+                        android:textSize="12sp"
+                        android:textColor="@color/dark_gray"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"/>
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/staff_auth_userpass"
+                        android:hint="비밀번호를 입력하세요."
+                        android:inputType="textPassword"
+                        android:background="@color/orignal_white"
+                        android:padding="8dp"
+                        android:textSize="12sp"
+                        android:textColor="@color/dark_gray"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"/>
+                </LinearLayout>
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:id="@+id/staff_auth_submit"
+                    android:text="LOGIN"
+                    android:background="@drawable/rect_drakblue"
+                    android:textColor="@color/orignal_white"/>
+            </TableRow>
+        </TableLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/staff_auth_goto_admin"
+            android:text="관리자 로그인"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/staff_auth_goto_signup"
+            android:text="회원가입"
+            android:textSize="18sp"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"/>
+    </LinearLayout>
+
+</RelativeLayout>

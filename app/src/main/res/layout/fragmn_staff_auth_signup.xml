@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/colorPrimary">
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/staff_signup_field"
+        android:layout_margin="16dp"
+        android:stretchColumns="1">
+        <TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="이름"
+                android:textSize="18sp" />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/staff_signup_field_name"
+                android:background="@color/orignal_white"
+                android:padding="12dp"
+                android:textSize="13sp"
+                android:textColor="@color/dark_gray"
+                android:hint="이름을 입력하세요."
+                android:layout_marginBottom="8dp"/>
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="휴대전화 "
+                android:textSize="18sp"
+                android:layout_marginEnd="16dp"/>
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/staff_signup_field_tel"
+                android:background="@color/orignal_white"
+                android:padding="12dp"
+                android:textSize="13sp"
+                android:textColor="@color/dark_gray"
+                android:hint="휴대전화를 입력하세요."
+                android:layout_marginBottom="8dp"/>
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="비밀번호"
+                android:textSize="18sp"/>
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/staff_signup_field_passwd"
+                android:background="@color/orignal_white"
+                android:padding="12dp"
+                android:textSize="13sp"
+                android:textColor="@color/dark_gray"
+                android:hint="비밀번호을 입력하세요."/>
+        </TableRow>
+    </TableLayout>
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/staff_signup_sign"
+        android:layout_below="@id/staff_signup_field"
+        android:layout_margin="16dp">
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/staff_signup_sign_all"
+            android:text="전체 동의"/>
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/staff_signup_sign_opt1"
+            android:text="알뜰 서비스 이용약관 동의"/>
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/staff_signup_sign_opt2"
+            android:text="개인정보 수집 및 이용 동의"/>
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/staff_signup_sign_opt3"
+            android:text="만 14세 이상 서비스 이용 동의"/>
+    </RadioGroup>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/staff_signup_buttons"
+        android:orientation="horizontal"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="16dp">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:id="@+id/staff_signup_button_cancel"
+            android:text="뒤로 가기"
+            android:padding="8dp"
+            android:layout_margin="8dp"
+            android:background="@color/orignal_white"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:id="@+id/staff_signup_button_commit"
+            android:text="회원 가입"
+            android:padding="8dp"
+            android:layout_margin="8dp"
+            android:background="@color/orignal_white" />
+    </LinearLayout>
+</RelativeLayout>
