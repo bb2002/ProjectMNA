@@ -9,5 +9,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/staff_auth_container"
-        android:name="kr.saintdev.projectmna.views.staff.fragments.auth.LoginFragment" />
+        android:name="kr.saintdev.projectmna.views.staff.fragments.auth.LoadingFragment" />
 </RelativeLayout>

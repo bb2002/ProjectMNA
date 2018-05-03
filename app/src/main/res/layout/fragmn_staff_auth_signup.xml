@@ -6,7 +6,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/staff_signup_field"
-        android:layout_margin="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:stretchColumns="1">
         <TableRow>
             <TextView
@@ -39,6 +41,7 @@
                 android:background="@color/orignal_white"
                 android:padding="12dp"
                 android:textSize="13sp"
+                android:inputType="phone"
                 android:textColor="@color/dark_gray"
                 android:hint="휴대전화를 입력하세요."
                 android:layout_marginBottom="8dp"/>
@@ -56,6 +59,7 @@
                 android:background="@color/orignal_white"
                 android:padding="12dp"
                 android:textSize="13sp"
+                android:inputType="textPassword"
                 android:textColor="@color/dark_gray"
                 android:hint="비밀번호을 입력하세요."/>
         </TableRow>
