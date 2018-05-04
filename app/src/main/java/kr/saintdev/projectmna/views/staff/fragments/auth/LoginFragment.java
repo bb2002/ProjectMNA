@@ -19,6 +19,7 @@ import java.util.HashMap;
 
 import kr.saintdev.projectmna.R;
 import kr.saintdev.projectmna.modules.constant.HttpURLDefines;
+import kr.saintdev.projectmna.modules.dbm.Authme;
 import kr.saintdev.projectmna.modules.modules.BackgroundWork;
 import kr.saintdev.projectmna.modules.modules.OnBackgroundWorkListener;
 import kr.saintdev.projectmna.modules.modules.http.HttpRequester;
@@ -145,7 +146,12 @@ public class LoginFragment extends SuperFragment {
                     if (body.getString("is-success").equals("yes")) {
                         // 처리 성공
                         // 계정 정보를 Authme 를 통해 저장하고, 이후로는 자동로그인을 사용합니다.
-                        Toast.makeText(control, "SUCCCESS", Toast.LENGTH_SHORT).show();
+                        String userPin = body.getString("user-pin");
+
+                        Authme me = Authme.getInstance(control);
+                        me.setUserPin(userPin);
+
+                        control.switchFragment(new LoadingFragment());
                     } else {
                         // 승인되지 않은 계정입니다.
                         dialog.setTitle("Auth error");

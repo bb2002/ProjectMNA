@@ -40,5 +40,10 @@ public class Authme {
 
     public void setUserPin(String pin) {
         this.editor.putString("user-pin", pin);
+        commit();
+    }
+
+    public void commit() {
+        this.editor.commit();
     }
 }
