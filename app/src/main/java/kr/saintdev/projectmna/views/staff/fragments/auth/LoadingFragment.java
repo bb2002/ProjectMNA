@@ -1,5 +1,6 @@
 package kr.saintdev.projectmna.views.staff.fragments.auth;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -8,9 +9,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.json.JSONObject;
+
+import java.util.HashMap;
+
 import kr.saintdev.projectmna.R;
+import kr.saintdev.projectmna.modules.constant.HttpURLDefines;
 import kr.saintdev.projectmna.modules.dbm.Authme;
+import kr.saintdev.projectmna.modules.modules.BackgroundWork;
+import kr.saintdev.projectmna.modules.modules.OnBackgroundWorkListener;
+import kr.saintdev.projectmna.modules.modules.http.HttpRequester;
+import kr.saintdev.projectmna.modules.modules.http.HttpResponseObject;
 import kr.saintdev.projectmna.views.common.SuperFragment;
+import kr.saintdev.projectmna.views.common.dialogs.main.DialogManager;
+import kr.saintdev.projectmna.views.common.dialogs.main.clicklistener.OnYesClickListener;
 import kr.saintdev.projectmna.views.staff.activitys.StaffAuthActivity;
 
 /**
@@ -25,6 +37,8 @@ import kr.saintdev.projectmna.views.staff.activitys.StaffAuthActivity;
 public class LoadingFragment extends SuperFragment {
     StaffAuthActivity control = null;
 
+    DialogManager dm = null;
+
     public LoadingFragment() {
     }
 
@@ -35,6 +49,8 @@ public class LoadingFragment extends SuperFragment {
 
         // control 객체를 얻습니다.
         this.control = (StaffAuthActivity) getActivity();
+        this.dm = new DialogManager(control);
+
         return v;
     }
 
@@ -42,15 +58,81 @@ public class LoadingFragment extends SuperFragment {
     public void onResume() {
         super.onResume();
         Authme me = Authme.getInstance(control);
+        String userPin = me.getUserPin();
 
-        if(me.getUserPin() == null) {
+        if(userPin == null) {
             // 로그인이 필요합니다.
             control.switchFragment(new LoginFragment());
-            Log.d("MNA", "로그인 하러 갑니다.");
             return;
         }
 
         // 사용자를 자동로그인 한 후, MainActivity 를 실행합니다.
+        HashMap<String, Object> args = new HashMap<>();
+        args.put("user-pin", userPin);
+        args.put("user-permiss", 0);    // Staff 계정으로 로그인 합니다.
 
+        HttpRequester requester = new HttpRequester(HttpURLDefines.AUTH_AUTO, args, 0, new OnBackgroundWorkerHandler());
+        requester.execute();
+    }
+
+    class OnBackgroundWorkerHandler implements OnBackgroundWorkListener {
+        @Override
+        public void onSuccess(int requestCode, BackgroundWork worker) {
+            HttpResponseObject respObj = (HttpResponseObject) worker.getResult();
+
+            if(respObj.getResponseResultCode() == 200) {
+                // 자동 로그인 성공
+                // 사용자 계정 정보를 업데이트 합니다.
+                JSONObject body = respObj.getBody();
+
+                if(body == null) {
+                    // body 가 없습니다.
+                    dm.setTitle("Fatal error");
+                    dm.setDescription("Body 를 전달받지 못했습니다.");
+                    dm.show();
+                    return;
+                }
+
+                try {
+                    Authme.UserPermission permiss =
+                            body.getString("user-permiss").equals("staff") ? Authme.UserPermission.STAFF : Authme.UserPermission.ADMIN;
+
+                    // 서버로 부터 받은 데이터에 대한 사용자 계정 정보
+                    Authme.AuthObject authObj = new Authme.AuthObject(
+                            body.getString("user-name"),
+                            body.getString("user-tel"),
+                            permiss
+                            );
+                    Authme me = Authme.getInstance(control);
+                    me.setAuthObject(authObj);  // 계정 정보값을 저장합니다.
+
+
+                } catch(Exception ex) {
+                    dm.setTitle("Fatal error");
+                    dm.setDescription("JSONException " + ex.getMessage());
+                    dm.show();
+                    return;
+                }
+            } else if(respObj.getResponseResultCode() == 401){
+                // user-pin 오류
+            } else {
+                // 내부 서버 오류
+            }
+        }
+
+        @Override
+        public void onFailed(int requestCode, Exception ex) {
+            // 클라이언트 요청 실패
+            dm.setTitle("Http 요청 실패");
+            dm.setDescription("Http 요청에 실패하였습니다.\n" + ex.getMessage());
+            dm.show();
+        }
+    }
+
+    class DialogButtonClickHandler implements OnYesClickListener {
+        @Override
+        public void onClick(DialogInterface dialog) {
+
+        }
     }
 }
