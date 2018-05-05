@@ -121,7 +121,7 @@ public class LoginFragment extends SuperFragment {
             HashMap<String, Object> args = new HashMap<>();
             args.put("user-tel", tel);
             args.put("user-passwd", pass);
-            HttpRequester request = new HttpRequester(HttpURLDefines.AUTH_LOGIN, args, 0, new OnBackgroundWorkHandler());
+            HttpRequester request = new HttpRequester(HttpURLDefines.STAFF_LOGIN, args, 0, new OnBackgroundWorkHandler());
             request.execute();
 
             pm.setMessage("Now loading...");
@@ -141,16 +141,19 @@ public class LoginFragment extends SuperFragment {
                 if (respObj.getResponseResultCode() == 200) {
                     // 서버측 처리 성공
                     JSONObject body = respObj.getBody();
+                    String resultMsg = body.getString("is-success");
 
-                    if (body.getString("is-success").equals("yes")) {
-                        // 처리 성공
-                        // 계정 정보를 Authme 를 통해 저장하고, 이후로는 자동로그인을 사용합니다.
-                        Toast.makeText(control, "SUCCCESS", Toast.LENGTH_SHORT).show();
-                    } else {
-                        // 승인되지 않은 계정입니다.
-                        dialog.setTitle("Auth error");
-                        dialog.setDescription("승인되지 않은 계정입니다.\n관리자에게 문의하세요.");
-                        dialog.show();
+                    switch(resultMsg) {
+                        case "OK":
+                            // 처리 성공
+                            // 계정 정보를 Authme 를 통해 저장하고, 이후로는 자동로그인을 사용합니다.
+                            break;
+                        case "NO_ACCESS_PERMISSION":
+                            // 승인되지 않은 계정입니다.
+                            dialog.setTitle("Auth error");
+                            dialog.setDescription("승인되지 않은 계정입니다.\n관리자에게 문의하세요.");
+                            dialog.show();
+                            break;
                     }
                 } else if (respObj.getResponseResultCode() == 401) {
                     // 로그인 정보 오류
@@ -161,6 +164,7 @@ public class LoginFragment extends SuperFragment {
                     // 내부 서버 오류
                     dialog.setTitle("Internal server error");
                     dialog.setDescription("An error occurred. 500");
+                    dialog.show();
                 }
             } catch(Exception ex) {
                 ex.printStackTrace();

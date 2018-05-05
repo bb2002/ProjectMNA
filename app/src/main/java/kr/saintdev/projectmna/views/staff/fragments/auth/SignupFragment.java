@@ -41,6 +41,7 @@ public class SignupFragment extends SuperFragment {
     EditText nameEditor = null;
     EditText telEditor = null;
     EditText passwdEditor = null;
+    EditText adminTelEditor = null;
     Button okButton = null;
     Button cancelButton = null;
 
@@ -63,6 +64,7 @@ public class SignupFragment extends SuperFragment {
         this.nameEditor = v.findViewById(R.id.staff_signup_field_name);
         this.telEditor = v.findViewById(R.id.staff_signup_field_tel);
         this.passwdEditor = v.findViewById(R.id.staff_signup_field_passwd);
+        this.adminTelEditor = v.findViewById(R.id.staff_signup_field_admintel);
         this.okButton = v.findViewById(R.id.staff_signup_button_commit);
         this.cancelButton = v.findViewById(R.id.staff_signup_button_cancel);
 
@@ -85,8 +87,9 @@ public class SignupFragment extends SuperFragment {
                 String name = nameEditor.getText().toString();
                 String tel = telEditor.getText().toString();
                 String passwd = passwdEditor.getText().toString();
+                String adminTel = adminTelEditor.getText().toString();
 
-                if(name.length() == 0 || tel.length() == 0 || passwd.length() == 0) {
+                if(name.length() == 0 || tel.length() == 0 || passwd.length() == 0 || adminTel.length() == 0) {
                     // 입력되지 않은 값이 있습니다.
                     infoDialog.setTitle("오류");
                     infoDialog.setDescription("모든 정보를 입력해주세요.");
@@ -94,17 +97,17 @@ public class SignupFragment extends SuperFragment {
                 } else {
                     // 모두 입력하셨습니다.
                     HashMap<String, Object> args = new HashMap<>();
-                    args.put("user-name", name);
-                    args.put("user-tel", tel);
-                    args.put("user-passwd", passwd);
-                    args.put("user-permiss", 0);        // 현재 생성하는 계정은 직원을 위한 계정
-
+                    args.put("staff-name", name);
+                    args.put("staff-tel", tel);
+                    args.put("staff-passwd", passwd);
+                    args.put("staff-admintel", adminTel);
                     proManager.setMessage("Loading...");
                     proManager.enable();
-                    HttpRequester request = new HttpRequester(HttpURLDefines.AUTH_SIGNUP, args, 0, new OnBackgroundTaskHandler());
+
+                    HttpRequester request =
+                            new HttpRequester(HttpURLDefines.STAFF_AUTH_SIGNUP, args, 0, new OnBackgroundTaskHandler());
                     request.execute();
                 }
-
             } else if(v.getId() == R.id.staff_signup_button_cancel) {
                 // 닫기 버튼을 눌렀을 경우
                 control.switchFragment(new LoginFragment());
@@ -125,12 +128,21 @@ public class SignupFragment extends SuperFragment {
 
             if(respObj.getResponseResultCode() == 200) {
                 try {
-                    if (!respObj.getBody().getString("is-success").equals("ALREADY")) {
-                        infoDialog.setTitle("가입되었습니다.");
-                        infoDialog.setDescription("관리자가 이 계정을 승인하면 로그인하세요.");
-                    } else {
-                        infoDialog.setTitle("이미 가입된 계정입니다.");
-                        infoDialog.setDescription("로그인 해 보세요.");
+                    String resultMsg = respObj.getBody().getString("is-success");
+
+                    switch(resultMsg) {
+                        case "ALREADY_REGISTED":        // 이미 가입된 전화번호 일 경우
+                            infoDialog.setTitle("가입되었습니다.");
+                            infoDialog.setDescription("관리자가 이 계정을 승인하면 로그인하세요.");
+                            break;
+                        case "ADMIN_TEL_NOT_FOUND":     // 관리자 전화번호가 존재하지 않는다.
+                            infoDialog.setTitle("전화번호 오류");
+                            infoDialog.setDescription("관리자 전화번호가 잘못되었습니다.\n다시 입력하세요.");
+                            break;
+                        case "Success":                 // 가입 성공
+                            infoDialog.setTitle("이미 가입된 계정입니다.");
+                            infoDialog.setDescription("로그인 해 보세요.");
+                            break;
                     }
                 } catch(JSONException jex){
                     jex.printStackTrace();
@@ -152,7 +164,6 @@ public class SignupFragment extends SuperFragment {
                 infoDialog.setDescription("An error occrred.\n" + ex.getMessage());
                 infoDialog.show();
             }
-
 
             proManager.disable();
         }

@@ -9,6 +9,6 @@ package kr.saintdev.projectmna.modules.constant;
 public interface HttpURLDefines {
     String TARGET_SERVER = "http://saintdev.kr/mna/";
 
-    String AUTH_SIGNUP = TARGET_SERVER + "auth/signup.php";
-    String AUTH_LOGIN = TARGET_SERVER + "auth/login.php";
+    String STAFF_AUTH_SIGNUP = TARGET_SERVER + "auth/staff-signup.php";
+    String STAFF_LOGIN = TARGET_SERVER + "auth/staff-login.php";
 }
