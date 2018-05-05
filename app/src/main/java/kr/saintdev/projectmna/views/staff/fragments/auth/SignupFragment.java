@@ -60,7 +60,6 @@ public class SignupFragment extends SuperFragment {
         this.control = (StaffAuthActivity) getActivity();
         this.control.setActionBarTitle("회원가입");
 
-        // 개체를 찾습니다.
         this.nameEditor = v.findViewById(R.id.staff_signup_field_name);
         this.telEditor = v.findViewById(R.id.staff_signup_field_tel);
         this.passwdEditor = v.findViewById(R.id.staff_signup_field_passwd);
@@ -132,16 +131,16 @@ public class SignupFragment extends SuperFragment {
 
                     switch(resultMsg) {
                         case "ALREADY_REGISTED":        // 이미 가입된 전화번호 일 경우
-                            infoDialog.setTitle("가입되었습니다.");
-                            infoDialog.setDescription("관리자가 이 계정을 승인하면 로그인하세요.");
+                            infoDialog.setTitle("이미 가입된 계정입니다.");
+                            infoDialog.setDescription("로그인 해 보세요.");
                             break;
                         case "ADMIN_TEL_NOT_FOUND":     // 관리자 전화번호가 존재하지 않는다.
                             infoDialog.setTitle("전화번호 오류");
                             infoDialog.setDescription("관리자 전화번호가 잘못되었습니다.\n다시 입력하세요.");
                             break;
-                        case "Success":                 // 가입 성공
-                            infoDialog.setTitle("이미 가입된 계정입니다.");
-                            infoDialog.setDescription("로그인 해 보세요.");
+                        case "OK":                 // 가입 성공
+                            infoDialog.setTitle("가입되었습니다.");
+                            infoDialog.setDescription("관리자가 이 계정을 승인하면 로그인하세요.");
                             break;
                     }
                 } catch(JSONException jex){
@@ -151,8 +150,8 @@ public class SignupFragment extends SuperFragment {
                 infoDialog.setTitle("Error");
                 infoDialog.setDescription("Internal server error.\n" + respObj.getResponseResultCode());
             }
+            infoDialog.show();  // 결과값을 사용자에게 보여준다.
 
-            infoDialog.show();
             control.switchFragment(new LoginFragment());
         }
 

@@ -50,6 +50,7 @@ public class LoadingFragment extends SuperFragment {
         // control 객체를 얻습니다.
         this.control = (StaffAuthActivity) getActivity();
         this.dm = new DialogManager(control);
+        this.dm.setOnYesButtonClickListener(new DialogButtonClickHandler(), "OK");
 
         return v;
     }
@@ -71,7 +72,7 @@ public class LoadingFragment extends SuperFragment {
         args.put("user-pin", userPin);
         args.put("user-permiss", 0);    // Staff 계정으로 로그인 합니다.
 
-        HttpRequester requester = new HttpRequester(HttpURLDefines.AUTH_AUTO, args, 0, new OnBackgroundWorkerHandler());
+        HttpRequester requester = new HttpRequester(HttpURLDefines.AUTO_LOGIN, args, 0, new OnBackgroundWorkerHandler());
         requester.execute();
     }
 
@@ -132,7 +133,7 @@ public class LoadingFragment extends SuperFragment {
     class DialogButtonClickHandler implements OnYesClickListener {
         @Override
         public void onClick(DialogInterface dialog) {
-
+            dialog.dismiss();
         }
     }
 }

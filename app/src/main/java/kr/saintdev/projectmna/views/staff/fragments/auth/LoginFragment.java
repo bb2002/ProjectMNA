@@ -19,6 +19,7 @@ import java.util.HashMap;
 
 import kr.saintdev.projectmna.R;
 import kr.saintdev.projectmna.modules.constant.HttpURLDefines;
+import kr.saintdev.projectmna.modules.dbm.Authme;
 import kr.saintdev.projectmna.modules.modules.BackgroundWork;
 import kr.saintdev.projectmna.modules.modules.OnBackgroundWorkListener;
 import kr.saintdev.projectmna.modules.modules.http.HttpRequester;
@@ -121,7 +122,8 @@ public class LoginFragment extends SuperFragment {
             HashMap<String, Object> args = new HashMap<>();
             args.put("user-tel", tel);
             args.put("user-passwd", pass);
-            HttpRequester request = new HttpRequester(HttpURLDefines.STAFF_LOGIN, args, 0, new OnBackgroundWorkHandler());
+            args.put("user-permiss", 0);        // Staff 계정으로 로그인 합니다.
+            HttpRequester request = new HttpRequester(HttpURLDefines.AUTH_LOGIN, args, 0, new OnBackgroundWorkHandler());
             request.execute();
 
             pm.setMessage("Now loading...");
@@ -147,6 +149,12 @@ public class LoginFragment extends SuperFragment {
                         case "OK":
                             // 처리 성공
                             // 계정 정보를 Authme 를 통해 저장하고, 이후로는 자동로그인을 사용합니다.
+                            String userPin = body.getString("user-pin");
+
+                            Authme me = Authme.getInstance(control);
+                            me.setUserPin(userPin);
+
+                            control.switchFragment(new LoadingFragment());
                             break;
                         case "NO_ACCESS_PERMISSION":
                             // 승인되지 않은 계정입니다.

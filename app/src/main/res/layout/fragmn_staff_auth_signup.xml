@@ -61,7 +61,25 @@
                 android:textSize="13sp"
                 android:inputType="textPassword"
                 android:textColor="@color/dark_gray"
-                android:hint="비밀번호을 입력하세요."/>
+                android:hint="비밀번호을 입력하세요."
+                android:layout_marginBottom="8dp"/>
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="관리자 "
+                android:textSize="18sp"/>
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/staff_signup_field_admintel"
+                android:background="@color/orignal_white"
+                android:padding="12dp"
+                android:textSize="13sp"
+                android:inputType="phone"
+                android:textColor="@color/dark_gray"
+                android:hint="관리자 전화번호를 입력하세요." />
         </TableRow>
     </TableLayout>
 
