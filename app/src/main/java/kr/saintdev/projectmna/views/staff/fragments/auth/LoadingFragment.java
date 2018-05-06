@@ -1,6 +1,7 @@
 package kr.saintdev.projectmna.views.staff.fragments.auth;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,6 +25,7 @@ import kr.saintdev.projectmna.views.common.SuperFragment;
 import kr.saintdev.projectmna.views.common.dialogs.main.DialogManager;
 import kr.saintdev.projectmna.views.common.dialogs.main.clicklistener.OnYesClickListener;
 import kr.saintdev.projectmna.views.staff.activitys.StaffAuthActivity;
+import kr.saintdev.projectmna.views.staff.activitys.StaffMainActivity;
 
 /**
  * Copyright (c) 2015-2018 Saint software All rights reserved.
@@ -72,14 +74,20 @@ public class LoadingFragment extends SuperFragment {
         args.put("user-pin", userPin);
         args.put("user-permiss", 0);    // Staff 계정으로 로그인 합니다.
 
-        HttpRequester requester = new HttpRequester(HttpURLDefines.AUTO_LOGIN, args, 0, new OnBackgroundWorkerHandler());
-        requester.execute();
+        //HttpRequester requester = new HttpRequester(HttpURLDefines.AUTO_LOGIN, args, 0, new OnBackgroundWorkerHandler());
+        //requester.execute();
+
+        // MainActivity 를 실행합니다.
+        Intent main = new Intent(control, StaffMainActivity.class);
+        startActivity(main);
+        control.finish();
     }
 
     class OnBackgroundWorkerHandler implements OnBackgroundWorkListener {
         @Override
         public void onSuccess(int requestCode, BackgroundWork worker) {
             HttpResponseObject respObj = (HttpResponseObject) worker.getResult();
+            Authme me = Authme.getInstance(control);
 
             if(respObj.getResponseResultCode() == 200) {
                 // 자동 로그인 성공
@@ -104,20 +112,29 @@ public class LoadingFragment extends SuperFragment {
                             body.getString("user-tel"),
                             permiss
                             );
-                    Authme me = Authme.getInstance(control);
                     me.setAuthObject(authObj);  // 계정 정보값을 저장합니다.
 
-
+                    // MainActivity 를 실행합니다.
+                    Intent main = new Intent(control, StaffMainActivity.class);
+                    startActivity(main);
+                    control.finish();
                 } catch(Exception ex) {
                     dm.setTitle("Fatal error");
                     dm.setDescription("JSONException " + ex.getMessage());
                     dm.show();
-                    return;
                 }
             } else if(respObj.getResponseResultCode() == 401){
-                // user-pin 오류
+                // 인증서 필드가 잘못되었습니다.
+                dm.setTitle("Fatal error");
+                dm.setDescription("인증서가 잘못되었습니다.\n다시 로그인 해 주세요.");
+                dm.show();
+
+                me.clear();
             } else {
                 // 내부 서버 오류
+                dm.setTitle("Fatal error");
+                dm.setDescription("Internal server error. 500");
+                dm.show();
             }
         }
 

@@ -59,6 +59,14 @@ public class Authme {
         this.editor.commit();
     }
 
+    public void clear() {
+        setUserPin(null);
+        this.editor.putString("user-tel", null);
+        this.editor.putString("user-name", null);
+        this.editor.putString("user-permiss", null);
+        this.editor.commit();
+    }
+
     public static class AuthObject {
         private String name = null;
         private String tel = null;
