@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import kr.saintdev.projectmna.R;
 import kr.saintdev.projectmna.views.common.SuperFragment;
 
 /**
@@ -22,6 +23,7 @@ public class SettingsFragment extends SuperFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return super.onCreateView(inflater, container, savedInstanceState);
+        View v = inflater.inflate(R.layout.fragmn_staff_main_settings, container, false);
+        return v;
     }
 }

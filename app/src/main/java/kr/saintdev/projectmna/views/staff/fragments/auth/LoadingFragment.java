@@ -71,16 +71,11 @@ public class LoadingFragment extends SuperFragment {
 
         // 사용자를 자동로그인 한 후, MainActivity 를 실행합니다.
         HashMap<String, Object> args = new HashMap<>();
-        args.put("user-pin", userPin);
+        args.put("user-uuid", userPin);
         args.put("user-permiss", 0);    // Staff 계정으로 로그인 합니다.
 
-        //HttpRequester requester = new HttpRequester(HttpURLDefines.AUTO_LOGIN, args, 0, new OnBackgroundWorkerHandler());
-        //requester.execute();
-
-        // MainActivity 를 실행합니다.
-        Intent main = new Intent(control, StaffMainActivity.class);
-        startActivity(main);
-        control.finish();
+        HttpRequester requester = new HttpRequester(HttpURLDefines.AUTO_LOGIN, args, 0, new OnBackgroundWorkerHandler());
+        requester.execute();
     }
 
     class OnBackgroundWorkerHandler implements OnBackgroundWorkListener {
@@ -103,8 +98,7 @@ public class LoadingFragment extends SuperFragment {
                 }
 
                 try {
-                    Authme.UserPermission permiss =
-                            body.getString("user-permiss").equals("staff") ? Authme.UserPermission.STAFF : Authme.UserPermission.ADMIN;
+                    Authme.UserPermission permiss = Authme.UserPermission.STAFF;
 
                     // 서버로 부터 받은 데이터에 대한 사용자 계정 정보
                     Authme.AuthObject authObj = new Authme.AuthObject(
@@ -151,6 +145,7 @@ public class LoadingFragment extends SuperFragment {
         @Override
         public void onClick(DialogInterface dialog) {
             dialog.dismiss();
+            control.finish();
         }
     }
 }
