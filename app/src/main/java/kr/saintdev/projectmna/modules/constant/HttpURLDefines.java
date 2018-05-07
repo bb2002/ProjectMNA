@@ -14,4 +14,6 @@ public interface HttpURLDefines {
     String AUTO_LOGIN = TARGET_SERVER + "auth/autologin.php";
 
     String STAFF_REQEUST_INFO = TARGET_SERVER + "staff/staff-info.php";
+    String STAFF_GO_WORK = TARGET_SERVER + "staff/staff-go-work.php";   // 출근 처리 스크립트
+    String STAFF_GO_HOME = TARGET_SERVER + "staff/staff-go-home.php";   // 퇴근 처리 스크립트
 }

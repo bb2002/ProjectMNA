@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,6 +41,8 @@ public class HomeFragment extends SuperFragment {
 
     StaffMainActivity control = null;
     DialogManager dm = null;
+    OnBackgroundWorkHandler backgroundHandler = null;
+    Authme me = null;
 
     public HomeFragment() {
     }
@@ -59,10 +62,11 @@ public class HomeFragment extends SuperFragment {
         this.dm.setOnYesButtonClickListener(new OnDialogCloseHandler(), "OK");
 
         OnButtonClickHandler handler = new OnButtonClickHandler();
+        this.backgroundHandler = new OnBackgroundWorkHandler();
         this.gotoWork.setOnClickListener(handler);
         this.gotoHome.setOnClickListener(handler);
 
-        Authme me = Authme.getInstance(control);
+        this.me = Authme.getInstance(control);
         String userPin = me.getUserPin();
 
         if(userPin == null) {
@@ -80,7 +84,7 @@ public class HomeFragment extends SuperFragment {
             args.put("staff-uuid", userPin);
 
             HttpRequester requester
-                    = new HttpRequester(HttpURLDefines.STAFF_REQEUST_INFO, args, 0, new OnBackgroundWorkHandler());
+                    = new HttpRequester(HttpURLDefines.STAFF_REQEUST_INFO, args, 0x0, this.backgroundHandler);
             requester.execute();
         }
 
@@ -93,12 +97,20 @@ public class HomeFragment extends SuperFragment {
     class OnButtonClickHandler implements View.OnClickListener {
         @Override
         public void onClick(View view) {
+            HttpRequester request = null;
+            HashMap<String, Object> args = new HashMap<>();
+            args.put("staff-uuid", me.getUserPin());
+
             switch (view.getId()) {
                 case R.id.staff_home_gohome:
+                    request = new HttpRequester(HttpURLDefines.STAFF_GO_HOME, args, 0x2, backgroundHandler);
                     break;
                 case R.id.staff_home_gowork:
+                    request = new HttpRequester(HttpURLDefines.STAFF_GO_WORK, args, 0x1, backgroundHandler);
                     break;
             }
+
+            request.execute();
         }
     }
 
@@ -106,7 +118,6 @@ public class HomeFragment extends SuperFragment {
         @Override
         public void onClick(DialogInterface dialog) {
             dialog.dismiss();
-            control.finish();
         }
     }
 
@@ -116,20 +127,60 @@ public class HomeFragment extends SuperFragment {
             HttpResponseObject obj = (HttpResponseObject) worker.getResult();
             JSONObject body = obj.getBody();
 
-            try {
-                if (obj.getResponseResultCode() == 200) {
-                    // 처리 성공
-                    String workspace = body.getString("staff-workspace");
-
-                    workspaceView.setText(workspace);
-                } else {
-                    // 처리 실패!
-                    dm.setTitle("Fatal error");
-                    dm.setDescription("An error occrred.\n" + obj.getResponseResultCode());
-                    dm.show();
+            if(requestCode == 0x0) {
+                // 사용자 계정 데이터를 불러옵니다.
+                try {
+                    if (obj.getResponseResultCode() == 200) {
+                        // 처리 성공
+                        String workspace = body.getString("staff-workspace");
+                        workspaceView.setText(workspace);
+                    } else {
+                        // 처리 실패!
+                        dm.setTitle("Fatal error");
+                        dm.setDescription("An error occrred.\n" + obj.getResponseResultCode());
+                        dm.show();
+                    }
+                } catch (JSONException jex) {
+                    jex.printStackTrace();
                 }
-            } catch(JSONException jex) {
-                jex.printStackTrace();
+            } else if(requestCode == 0x1) {
+                // 직원이 출근합니다.
+                try {
+                    if (obj.getResponseResultCode() == 200) {
+                        String msg = body.getString("is-success");
+
+                        if (msg.equals("OK")) {
+                            Toast.makeText(control, "출근처리 되었습니다.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(control, "이미 출근하셨습니다.", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        dm.setTitle("출근 실패");
+                        dm.setDescription("서버 오류가 발생했습니다.\n오늘은 집에서 쉬도록 하죠.");
+                        dm.show();
+                    }
+                } catch(JSONException jex) {
+                    jex.printStackTrace();
+                }
+            } else if(requestCode == 0x2){
+                // 직원이 퇴근합니다.
+                try {
+                    if (obj.getResponseResultCode() == 200) {
+                        String msg = body.getString("is-success");
+
+                        if (msg.equals("OK")) {
+                            Toast.makeText(control, "퇴근처리 되었습니다.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(control, "아직 출근하지 않았습니다.", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        dm.setTitle("퇴근 실패");
+                        dm.setDescription("서버 오류가 발생했습니다.\n오늘은 야근입니다.");
+                        dm.show();
+                    }
+                } catch(JSONException jex) {
+                    jex.printStackTrace();
+                }
             }
         }
 
@@ -138,6 +189,8 @@ public class HomeFragment extends SuperFragment {
             dm.setTitle("데이터 요청 실패!");
             dm.setDescription("데이터를 요청 할 수 없습니다.\n" + ex.getMessage());
             dm.show();
+
+            ex.printStackTrace();
         }
     }
 }

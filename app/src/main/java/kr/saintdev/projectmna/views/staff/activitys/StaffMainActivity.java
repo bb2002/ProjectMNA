@@ -41,8 +41,8 @@ public class StaffMainActivity extends AppCompatActivity {
         // Fragment 를 생성합니다.
         SuperFragment[] fragments = new SuperFragment[] {
                 new HomeFragment(),
-                new RequestJoinFragment(),
                 new WorkLogFragment(),
+                new RequestJoinFragment(),
                 new SettingsFragment()
         };
 
