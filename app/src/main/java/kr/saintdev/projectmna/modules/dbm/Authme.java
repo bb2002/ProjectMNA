@@ -53,7 +53,21 @@ public class Authme {
         this.editor.commit();
     }
 
+    public AuthObject getAuthObject() {
+        String tmpName = this.sharedPrep.getString("user-name", null);
+        String tmpTel = this.sharedPrep.getString("user-tel", null);
+        UserPermission tmpPermiss =
+                ConstConverter.getUserPermissionFromString(this.sharedPrep.getString("user-permiss", null));
 
+        if(tmpName == null || tmpTel == null || tmpPermiss == null) {
+            // null 이 존재합니다.
+            // 계정 인증서가 깨졌습니다.
+            return null;
+        }
+
+        AuthObject authObj = new AuthObject(tmpName, tmpTel, tmpPermiss);
+        return authObj;
+    }
 
     public void commit() {
         this.editor.commit();

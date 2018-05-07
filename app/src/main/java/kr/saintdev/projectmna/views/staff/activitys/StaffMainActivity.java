@@ -49,6 +49,12 @@ public class StaffMainActivity extends AppCompatActivity {
         // adapter 을 생성합니다.
         this.viewAdapter = new MainViewPagerAdapter(getSupportFragmentManager(), fragments);
         this.contentPager.setAdapter(this.viewAdapter);
+
+        // 리스너 처리
+        OnButtonClickHandler handler = new OnButtonClickHandler();
+        for(ImageButton b : this.buttons) {
+            b.setOnClickListener(handler);
+        }
     }
 
     class OnButtonClickHandler implements View.OnClickListener {
@@ -56,12 +62,16 @@ public class StaffMainActivity extends AppCompatActivity {
         public void onClick(View v) {
             switch(v.getId()) {
                 case R.id.staff_main_nav_home:
+                    contentPager.setCurrentItem(0);
                     break;
                 case R.id.staff_main_nav_worklog:
+                    contentPager.setCurrentItem(1);
                     break;
                 case R.id.staff_main_nav_reqjoin:
+                    contentPager.setCurrentItem(2);
                     break;
                 case R.id.staff_main_nav_settings:
+                    contentPager.setCurrentItem(3);
                     break;
             }
         }

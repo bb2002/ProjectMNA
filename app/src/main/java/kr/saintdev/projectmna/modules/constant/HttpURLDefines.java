@@ -12,4 +12,6 @@ public interface HttpURLDefines {
     String STAFF_AUTH_SIGNUP = TARGET_SERVER + "auth/staff-signup.php";
     String AUTH_LOGIN = TARGET_SERVER + "auth/login.php";
     String AUTO_LOGIN = TARGET_SERVER + "auth/autologin.php";
+
+    String STAFF_REQEUST_INFO = TARGET_SERVER + "staff/staff-info.php";
 }

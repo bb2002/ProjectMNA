@@ -58,7 +58,6 @@
                 android:layout_alignBaseline="@id/main_worklog_section_1"
                 android:layout_alignParentRight="true"
                 android:text="로딩 중..."
-                android:textStyle="bold"
                 android:textSize="12sp" />
         </RelativeLayout>
 
