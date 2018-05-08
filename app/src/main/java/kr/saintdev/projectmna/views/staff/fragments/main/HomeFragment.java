@@ -1,6 +1,7 @@
 package kr.saintdev.projectmna.views.staff.fragments.main;
 
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -86,6 +87,10 @@ public class HomeFragment extends SuperFragment {
             HttpRequester requester
                     = new HttpRequester(HttpURLDefines.STAFF_REQEUST_INFO, args, 0x0, this.backgroundHandler);
             requester.execute();
+
+            // 직원 상태를 불러옵니다.
+            HttpRequester worklogRequester = new HttpRequester(HttpURLDefines.STAFF_NOW_STATUS, args, 0x3, this.backgroundHandler);
+            worklogRequester.execute();
         }
 
         return v;
@@ -126,61 +131,52 @@ public class HomeFragment extends SuperFragment {
         public void onSuccess(int requestCode, BackgroundWork worker) {
             HttpResponseObject obj = (HttpResponseObject) worker.getResult();
             JSONObject body = obj.getBody();
+            int responseCode = obj.getResponseResultCode();
 
-            if(requestCode == 0x0) {
-                // 사용자 계정 데이터를 불러옵니다.
-                try {
-                    if (obj.getResponseResultCode() == 200) {
-                        // 처리 성공
-                        String workspace = body.getString("staff-workspace");
-                        workspaceView.setText(workspace);
-                    } else {
-                        // 처리 실패!
-                        dm.setTitle("Fatal error");
-                        dm.setDescription("An error occrred.\n" + obj.getResponseResultCode());
-                        dm.show();
-                    }
-                } catch (JSONException jex) {
-                    jex.printStackTrace();
-                }
-            } else if(requestCode == 0x1) {
-                // 직원이 출근합니다.
-                try {
-                    if (obj.getResponseResultCode() == 200) {
-                        String msg = body.getString("is-success");
-
-                        if (msg.equals("OK")) {
-                            Toast.makeText(control, "출근처리 되었습니다.", Toast.LENGTH_SHORT).show();
+            try {
+                switch (requestCode) {
+                    case 0x0:
+                        // 사용자 계정 데이터를 불러옵니다.
+                        if (responseCode == 200) {
+                            // 처리 성공
+                            String workspace = body.getString("staff-workspace");
+                            workspaceView.setText(workspace);
                         } else {
-                            Toast.makeText(control, "이미 출근하셨습니다.", Toast.LENGTH_SHORT).show();
+                            // 처리 실패!
+                            dm.setTitle("Fatal error");
+                            dm.setDescription("An error occrred.\n" + obj.getResponseResultCode());
+                            dm.show();
                         }
-                    } else {
-                        dm.setTitle("출근 실패");
-                        dm.setDescription("서버 오류가 발생했습니다.\n오늘은 집에서 쉬도록 하죠.");
-                        dm.show();
-                    }
-                } catch(JSONException jex) {
-                    jex.printStackTrace();
-                }
-            } else if(requestCode == 0x2){
-                // 직원이 퇴근합니다.
-                try {
-                    if (obj.getResponseResultCode() == 200) {
-                        String msg = body.getString("is-success");
-
-                        if (msg.equals("OK")) {
-                            Toast.makeText(control, "퇴근처리 되었습니다.", Toast.LENGTH_SHORT).show();
+                    case 0x1:
+                        // 직원이 출근합니다.
+                        if (responseCode == 200) {
+                            String msg = body.getString("is-success");
+                            if (msg.equals("OK")) enableHome();
+                        }
+                    case 0x2:
+                        // 직원이 퇴근합니다.
+                        if (responseCode == 200) {
+                            String msg = body.getString("is-success");
+                            if (msg.equals("OK")) enableWork();
                         } else {
-                            Toast.makeText(control, "아직 출근하지 않았습니다.", Toast.LENGTH_SHORT).show();
+                            dm.setTitle("퇴근 실패");
+                            dm.setDescription("서버 오류가 발생했습니다.\n오늘은 야근입니다.");
+                            dm.show();
                         }
-                    } else {
-                        dm.setTitle("퇴근 실패");
-                        dm.setDescription("서버 오류가 발생했습니다.\n오늘은 야근입니다.");
-                        dm.show();
-                    }
-                } catch(JSONException jex) {
-                    jex.printStackTrace();
+                    case 0x3:
+                        // 직원 상태를 불러옵니다.
+                        if (obj.getResponseResultCode() == 200) {
+                            String msg = body.getString("staff-status");
+
+                            // 현재 상태를 보고합니다.
+                            if (msg.equals("WORK")) enableWork();
+                            else enableHome();
+                        }
                 }
+            } catch(JSONException jex) {
+                dm.setTitle("JSONException");
+                dm.setDescription("Runtime error.\n" + jex.getMessage());
+                dm.show();
             }
         }
 
@@ -192,5 +188,19 @@ public class HomeFragment extends SuperFragment {
 
             ex.printStackTrace();
         }
+    }
+
+    private void enableWork() {
+        gotoWork.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        gotoWork.setEnabled(true);
+        gotoHome.setBackgroundColor(Color.WHITE);
+        gotoHome.setEnabled(false);
+    }
+
+    private void enableHome() {
+        gotoWork.setBackgroundColor(Color.WHITE);
+        gotoWork.setEnabled(false);
+        gotoHome.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        gotoHome.setEnabled(true);
     }
 }

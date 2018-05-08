@@ -84,6 +84,7 @@ public class Authme {
     public static class AuthObject {
         private String name = null;
         private String tel = null;
+        private String workspace = null;
         private UserPermission permiss = null;
 
         public AuthObject(String name, String tel, UserPermission permiss) {
@@ -114,6 +115,14 @@ public class Authme {
 
         public void setPermiss(UserPermission permiss) {
             this.permiss = permiss;
+        }
+
+        public String getWorkspace() {
+            return workspace;
+        }
+
+        public void setWorkspace(String workspace) {
+            this.workspace = workspace;
         }
     }
 

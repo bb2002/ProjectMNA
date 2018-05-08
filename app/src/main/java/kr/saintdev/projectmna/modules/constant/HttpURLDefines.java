@@ -16,4 +16,6 @@ public interface HttpURLDefines {
     String STAFF_REQEUST_INFO = TARGET_SERVER + "staff/staff-info.php";
     String STAFF_GO_WORK = TARGET_SERVER + "staff/staff-go-work.php";   // 출근 처리 스크립트
     String STAFF_GO_HOME = TARGET_SERVER + "staff/staff-go-home.php";   // 퇴근 처리 스크립트
+    String STAFF_WORKLOG = TARGET_SERVER + "staff/staff-worklog.php";   // 근무 로그
+    String STAFF_NOW_STATUS = TARGET_SERVER + "staff/staff-status.php"; // 현재 직원 상태
 }
