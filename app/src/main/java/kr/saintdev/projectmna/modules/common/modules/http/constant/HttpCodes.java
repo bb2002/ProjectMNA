@@ -1,4 +1,4 @@
-package kr.saintdev.projectmna.modules.modules.http.constant;
+package kr.saintdev.projectmna.modules.common.modules.http.constant;
 
 /**
  * Created by yuuki on 18. 4. 22.

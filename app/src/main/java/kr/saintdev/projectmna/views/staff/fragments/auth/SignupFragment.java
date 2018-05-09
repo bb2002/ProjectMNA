@@ -4,25 +4,22 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioGroup;
-import android.widget.Toast;
 
 import org.json.JSONException;
 
 import java.util.HashMap;
 
 import kr.saintdev.projectmna.R;
-import kr.saintdev.projectmna.modules.constant.HttpURLDefines;
-import kr.saintdev.projectmna.modules.modules.BackgroundWork;
-import kr.saintdev.projectmna.modules.modules.OnBackgroundWorkListener;
-import kr.saintdev.projectmna.modules.modules.http.HttpRequester;
-import kr.saintdev.projectmna.modules.modules.http.HttpResponseObject;
+import kr.saintdev.projectmna.modules.common.constant.HttpURLDefines;
+import kr.saintdev.projectmna.modules.common.modules.BackgroundWork;
+import kr.saintdev.projectmna.modules.common.modules.OnBackgroundWorkListener;
+import kr.saintdev.projectmna.modules.common.modules.http.HttpRequester;
+import kr.saintdev.projectmna.modules.common.modules.http.HttpResponseObject;
 import kr.saintdev.projectmna.views.common.SuperFragment;
 import kr.saintdev.projectmna.views.common.dialogs.main.DialogManager;
 import kr.saintdev.projectmna.views.common.dialogs.main.clicklistener.OnYesClickListener;

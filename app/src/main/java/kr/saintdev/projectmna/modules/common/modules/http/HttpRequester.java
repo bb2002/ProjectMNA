@@ -1,10 +1,10 @@
-package kr.saintdev.projectmna.modules.modules.http;
+package kr.saintdev.projectmna.modules.common.modules.http;
 
 import java.util.HashMap;
 import java.util.Iterator;
 
-import kr.saintdev.projectmna.modules.modules.BackgroundWork;
-import kr.saintdev.projectmna.modules.modules.OnBackgroundWorkListener;
+import kr.saintdev.projectmna.modules.common.modules.BackgroundWork;
+import kr.saintdev.projectmna.modules.common.modules.OnBackgroundWorkListener;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

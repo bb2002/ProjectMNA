@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,16 +17,17 @@ import org.json.JSONObject;
 import java.util.HashMap;
 
 import kr.saintdev.projectmna.R;
-import kr.saintdev.projectmna.modules.constant.HttpURLDefines;
-import kr.saintdev.projectmna.modules.dbm.Authme;
-import kr.saintdev.projectmna.modules.modules.BackgroundWork;
-import kr.saintdev.projectmna.modules.modules.OnBackgroundWorkListener;
-import kr.saintdev.projectmna.modules.modules.http.HttpRequester;
-import kr.saintdev.projectmna.modules.modules.http.HttpResponseObject;
+import kr.saintdev.projectmna.modules.common.constant.HttpURLDefines;
+import kr.saintdev.projectmna.modules.common.dbm.Authme;
+import kr.saintdev.projectmna.modules.common.modules.BackgroundWork;
+import kr.saintdev.projectmna.modules.common.modules.OnBackgroundWorkListener;
+import kr.saintdev.projectmna.modules.common.modules.http.HttpRequester;
+import kr.saintdev.projectmna.modules.common.modules.http.HttpResponseObject;
 import kr.saintdev.projectmna.views.common.SuperFragment;
 import kr.saintdev.projectmna.views.common.dialogs.main.DialogManager;
 import kr.saintdev.projectmna.views.common.dialogs.main.clicklistener.OnYesClickListener;
 import kr.saintdev.projectmna.views.staff.activitys.StaffMainActivity;
+import kr.saintdev.projectmna.modules.staff.lib.dbm.StaffAccountManager;
 
 /**
  * Copyright (c) 2015-2018 Saint software All rights reserved.
@@ -45,6 +45,8 @@ public class HomeFragment extends SuperFragment {
     OnBackgroundWorkHandler backgroundHandler = null;
     Authme me = null;
 
+    StaffAccountManager staffInfo = null;
+
     public HomeFragment() {
     }
 
@@ -61,6 +63,8 @@ public class HomeFragment extends SuperFragment {
         this.gotoHome = v.findViewById(R.id.staff_home_gohome);
         this.dm = new DialogManager(control);
         this.dm.setOnYesButtonClickListener(new OnDialogCloseHandler(), "OK");
+
+        this.staffInfo = StaffAccountManager.getInstance(control);
 
         OnButtonClickHandler handler = new OnButtonClickHandler();
         this.backgroundHandler = new OnBackgroundWorkHandler();
@@ -141,18 +145,27 @@ public class HomeFragment extends SuperFragment {
                             // 처리 성공
                             String workspace = body.getString("staff-workspace");
                             workspaceView.setText(workspace);
+
+                            // 계정 데이터를 저장합니다.
+                            staffInfo.setValue("staff-workspace", workspace);
+                            staffInfo.setValue("staff-admintel", body.getString("staff-admintel"));
+                            staffInfo.setValue("staff-money", body.getString("staff-money"));
+                            staffInfo.setValue("staff-name", body.getString("staff-name"));
+                            staffInfo.setValue("staff-tel", body.getString("staff-tel"));
                         } else {
                             // 처리 실패!
                             dm.setTitle("Fatal error");
                             dm.setDescription("An error occrred.\n" + obj.getResponseResultCode());
                             dm.show();
                         }
+                        break;
                     case 0x1:
                         // 직원이 출근합니다.
                         if (responseCode == 200) {
                             String msg = body.getString("is-success");
                             if (msg.equals("OK")) enableHome();
                         }
+                        break;
                     case 0x2:
                         // 직원이 퇴근합니다.
                         if (responseCode == 200) {
@@ -163,20 +176,36 @@ public class HomeFragment extends SuperFragment {
                             dm.setDescription("서버 오류가 발생했습니다.\n오늘은 야근입니다.");
                             dm.show();
                         }
+                        break;
                     case 0x3:
                         // 직원 상태를 불러옵니다.
                         if (obj.getResponseResultCode() == 200) {
                             String msg = body.getString("staff-status");
 
                             // 현재 상태를 보고합니다.
-                            if (msg.equals("WORK")) enableWork();
+                            if (msg.equals("HOME")) enableWork();
                             else enableHome();
+
+                            // 출근 또는 퇴근 시간을 불러옵니다.
+                            String lastTime = body.getString("staff_start_time");
+
+                            if(lastTime.equals("null")) {
+                                // 아직 한번도 출근 하지 않음
+                                workDateView.setText("아직 출근 기록이 없습니다.");
+                            } else {
+                                // 기록을 보여준다.
+                                String state = msg.equals("WORK") ? "출근함" : "퇴근함";
+                                workDateView.setText(lastTime + " 마지막으로 " + state);
+                            }
                         }
+                        break;
                 }
             } catch(JSONException jex) {
                 dm.setTitle("JSONException");
                 dm.setDescription("Runtime error.\n" + jex.getMessage());
                 dm.show();
+
+                jex.printStackTrace();
             }
         }
 

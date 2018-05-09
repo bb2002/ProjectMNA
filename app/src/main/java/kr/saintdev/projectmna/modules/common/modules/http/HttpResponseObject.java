@@ -1,4 +1,4 @@
-package kr.saintdev.projectmna.modules.modules.http;
+package kr.saintdev.projectmna.modules.common.modules.http;
 
 import org.json.JSONException;
 import org.json.JSONObject;

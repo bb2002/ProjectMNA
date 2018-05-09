@@ -1,4 +1,4 @@
-package kr.saintdev.projectmna.modules.constant;
+package kr.saintdev.projectmna.modules.common.constant;
 
 /**
  * Copyright (c) 2015-2018 Saint software All rights reserved.

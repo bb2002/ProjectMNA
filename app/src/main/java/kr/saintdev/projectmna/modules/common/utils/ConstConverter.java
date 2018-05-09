@@ -1,6 +1,6 @@
-package kr.saintdev.projectmna.modules.utils;
+package kr.saintdev.projectmna.modules.common.utils;
 
-import kr.saintdev.projectmna.modules.dbm.Authme;
+import kr.saintdev.projectmna.modules.common.dbm.Authme;
 
 /**
  * Copyright (c) 2015-2018 Saint software All rights reserved.

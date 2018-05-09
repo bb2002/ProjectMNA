@@ -1,4 +1,4 @@
-package kr.saintdev.projectmna.views.staff.lib.dbm;
+package kr.saintdev.projectmna.modules.staff.lib.dbm;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -25,6 +25,7 @@ public class StaffAccountManager {
 
     public StaffAccountManager(Context context) {
         this.dbHelper = new DBHelper(context);
+        this.dbHelper.open();
     }
 
     public void setValue(String k, String value) {

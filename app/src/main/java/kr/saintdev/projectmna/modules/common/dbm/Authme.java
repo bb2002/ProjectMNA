@@ -1,9 +1,9 @@
-package kr.saintdev.projectmna.modules.dbm;
+package kr.saintdev.projectmna.modules.common.dbm;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import kr.saintdev.projectmna.modules.utils.ConstConverter;
+import kr.saintdev.projectmna.modules.common.utils.ConstConverter;
 
 /**
  * Copyright (c) 2015-2018 Saint software All rights reserved.

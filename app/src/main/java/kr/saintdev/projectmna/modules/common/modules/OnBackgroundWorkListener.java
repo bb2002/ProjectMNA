@@ -1,4 +1,4 @@
-package kr.saintdev.projectmna.modules.modules;
+package kr.saintdev.projectmna.modules.common.modules;
 
 /**
  * Created by yuuki on 18. 4. 21.

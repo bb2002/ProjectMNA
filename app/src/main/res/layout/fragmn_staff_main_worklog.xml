@@ -25,14 +25,19 @@
             android:textSize="12sp" />
     </RelativeLayout>
 
-    <!-- 근무시간 구역을 선택할 수 있는 Spinner -->
-    <Spinner
+    <!-- 근무시간 구역을 선택할 수 있는 Button -->
+    <Button
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="35dp"
         android:id="@+id/main_worklog_section"
         android:layout_alignParentRight="true"
         android:layout_below="@id/main_worklog_header"
-        android:layout_marginRight="16dp" />
+        android:layout_marginRight="16dp"
+        android:text="날짜 선택"
+        android:textSize="12sp"
+        android:paddingLeft="32dp"
+        android:paddingRight="32dp"
+        android:background="@color/orignal_white"/>
 
     <LinearLayout
         android:layout_width="match_parent"
