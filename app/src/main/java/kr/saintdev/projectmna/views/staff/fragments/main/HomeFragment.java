@@ -152,6 +152,8 @@ public class HomeFragment extends SuperFragment {
                             staffInfo.setValue("staff-money", body.getString("staff-money"));
                             staffInfo.setValue("staff-name", body.getString("staff-name"));
                             staffInfo.setValue("staff-tel", body.getString("staff-tel"));
+                            staffInfo.setValue("staff-sign-workstart", body.getString("staff-sign-workstart"));
+                            staffInfo.setValue("staff-sign-workend", body.getString("staff-sign-workend"));
                         } else {
                             // 처리 실패!
                             dm.setTitle("Fatal error");

@@ -11,12 +11,27 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 
 import kr.saintdev.projectmna.R;
+import kr.saintdev.projectmna.modules.common.constant.HttpURLDefines;
+import kr.saintdev.projectmna.modules.common.dbm.Authme;
+import kr.saintdev.projectmna.modules.common.modules.BackgroundWork;
+import kr.saintdev.projectmna.modules.common.modules.OnBackgroundWorkListener;
+import kr.saintdev.projectmna.modules.common.modules.http.HttpRequester;
+import kr.saintdev.projectmna.modules.common.modules.http.HttpResponseObject;
 import kr.saintdev.projectmna.modules.staff.adapters.WorklogAdapter;
+import kr.saintdev.projectmna.modules.staff.lib.objects.WorklogObject;
 import kr.saintdev.projectmna.views.common.SuperFragment;
+import kr.saintdev.projectmna.views.common.dialogs.main.DialogManager;
 import kr.saintdev.projectmna.views.staff.activitys.StaffMainActivity;
 import kr.saintdev.projectmna.modules.staff.lib.dbm.StaffAccountManager;
 
@@ -35,6 +50,8 @@ public class WorkLogFragment extends SuperFragment {
 
     StaffMainActivity control = null;
     StaffAccountManager staffInfo = null;       // 직원 정보
+    Authme me = null;
+    ArrayList<WorklogObject> works = null;
 
 
     public WorkLogFragment() {
@@ -52,6 +69,7 @@ public class WorkLogFragment extends SuperFragment {
         this.timeSection = v.findViewById(R.id.main_worklog_section);
         this.workTime = v.findViewById(R.id.main_worklog_section_time);
         this.worklog = v.findViewById(R.id.main_worklog_listview);
+        this.me = Authme.getInstance(control);
 
         OnButtonClickHandler handler = new OnButtonClickHandler();
         this.timeSection.setOnClickListener(handler);
@@ -69,9 +87,12 @@ public class WorkLogFragment extends SuperFragment {
         this.workspace.setText(staffInfo.getValue("staff-workspace"));
         this.staffName.setText(staffInfo.getValue("staff-name"));
 
-        // worklog 를 띄운다.
-        WorklogAdapter adapter = new WorklogAdapter(null);
-        this.worklog.setAdapter(adapter);
+        // 근무 기록을 서버로 부터 불러옵니다
+        HashMap<String, Object> args = new HashMap<>();
+        args.put("staff-uuid", this.me.getUserPin());
+        HttpRequester worklogRequester =
+                new HttpRequester(HttpURLDefines.STAFF_WORKLOG, args, 0x0, new OnBackgroundWorkHandler());
+        worklogRequester.execute();
 
     }
 
@@ -91,6 +112,57 @@ public class WorkLogFragment extends SuperFragment {
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
             timeSection.setText(year + "년 " + month + "월");
+        }
+    }
+
+    class OnBackgroundWorkHandler implements OnBackgroundWorkListener {
+        @Override
+        public void onSuccess(int requestCode, BackgroundWork worker) {
+            HttpResponseObject resp = (HttpResponseObject) worker.getResult();
+
+            try {
+                if (resp.getResponseResultCode() == 200) {
+                    JSONObject body = resp.getBody();
+
+                    JSONArray worklog = body.getJSONArray("worklog");
+                    ArrayList<WorklogObject> workLogs = new ArrayList<>();
+
+                    for(int i = 0; i < worklog.length(); i ++) {
+                        JSONObject obj = worklog.getJSONObject(i);
+
+                        boolean isWorking =
+                                obj.getString("staff_go_home").equals("null");
+                        WorklogObject workObj = new WorklogObject(
+                                obj.getString("work_id"),
+                                obj.getString("staff_date"),
+                                obj.getString("staff_go_work"),
+                                obj.getString("staff_go_home"),
+                                isWorking
+                        );
+
+                        workLogs.add(workObj);
+                    }
+
+                    works = workLogs;
+                } else {
+                    Toast.makeText(control, "데이터를 불러올 수 없습니다..", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                // Worklog 를 띄웁니다.
+                WorklogAdapter adapter = new WorklogAdapter(works, control);
+                worklog.setAdapter(adapter);
+            } catch(JSONException jex) {
+                jex.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onFailed(int requestCode, Exception ex) {
+            DialogManager dm = new DialogManager(control);
+            dm.setTitle("Fatal error");
+            dm.setDescription(ex.getMessage());
+            dm.show();
         }
     }
 }
