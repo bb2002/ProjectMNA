@@ -30,4 +30,28 @@ public class ConstConverter {
             default: return null;
         }
     }
+
+    /**
+     *
+     * @param date 00:00:00
+     * @return 00:00
+     */
+    public static String dateConverter(String date) {
+        date = date.substring(0, 5);
+        return date;
+    }
+
+    /**
+     *
+     * @param time second
+     * @return 00시간 00
+     */
+    public static String getHMS(int time) {
+        int h,m;
+        h = time / 3600;
+        time %= 3600;
+        m = time / 60;
+
+        return h + "시간 " + m + "분";
+    }
 }

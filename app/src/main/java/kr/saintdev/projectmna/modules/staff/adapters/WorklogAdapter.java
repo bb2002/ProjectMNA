@@ -7,9 +7,14 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 import kr.saintdev.projectmna.R;
+import kr.saintdev.projectmna.modules.common.utils.ConstConverter;
 import kr.saintdev.projectmna.modules.staff.lib.dbm.StaffAccountManager;
 import kr.saintdev.projectmna.modules.staff.lib.objects.WorklogObject;
 import kr.saintdev.projectmna.views.staff.fragments.main.WorkLogFragment;
@@ -60,13 +65,39 @@ public class WorklogAdapter extends BaseAdapter {
         WorklogObject work = works.get(position);
 
         workLogDate.setText(work.getDate());
-        workLogSignTime.setText(accountManager.getValue("staff-sign-workstart") + " ~ " + accountManager.getValue("staff-sign-workend"));
-        workMoney.setText((Integer.parseInt(accountManager.getValue("staff-money")) * 100)+"");
+        workLogSignTime.setText(
+                ConstConverter.dateConverter(accountManager.getValue("staff-sign-workstart")) +
+                        " ~ " + ConstConverter.dateConverter(accountManager.getValue("staff-sign-workend")));
         workLogRealTime.setText(
                 "출근 " + work.getWorkStartTime() +
-                        "퇴근 " + work.getWorkEndTime()
+                        (work.isNowWorking() ? "~ 근무중 " : "~ 퇴근 " + work.getWorkEndTime())
         );
-        workLogOkTime.setText("0000 분");
+
+        if(!work.isNowWorking()) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.KOREA);
+                Date startTime = sdf.parse(work.getWorkStartTime());
+                Date endTime = sdf.parse(work.getWorkEndTime());
+
+                long diff = (endTime.getTime() - startTime.getTime()) / 1000;
+
+                // 인정된 근무시간을 구합니다.
+                String workTime = ConstConverter.getHMS((int) diff);
+                workLogOkTime.setText("인정됨 : " + workTime);
+
+                // 급여를 구합니다.
+                int tenMinPerMoney = Integer.parseInt(accountManager.getValue("staff-money"));
+                int length = (int) ((diff/600) * tenMinPerMoney);
+
+                workMoney.setText(length + " 원");
+            } catch (ParseException pex) {
+                pex.printStackTrace();
+            }
+        } else {
+            workLogOkTime.setText("퇴근하지 않음.");
+            workMoney.setText("퇴근안함");
+        }
+
         return convertView;
     }
 }

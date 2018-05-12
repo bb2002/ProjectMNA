@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +18,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 import kr.saintdev.projectmna.R;
 import kr.saintdev.projectmna.modules.common.constant.HttpURLDefines;
@@ -28,6 +32,7 @@ import kr.saintdev.projectmna.modules.common.modules.BackgroundWork;
 import kr.saintdev.projectmna.modules.common.modules.OnBackgroundWorkListener;
 import kr.saintdev.projectmna.modules.common.modules.http.HttpRequester;
 import kr.saintdev.projectmna.modules.common.modules.http.HttpResponseObject;
+import kr.saintdev.projectmna.modules.common.utils.ConstConverter;
 import kr.saintdev.projectmna.modules.staff.adapters.WorklogAdapter;
 import kr.saintdev.projectmna.modules.staff.lib.objects.WorklogObject;
 import kr.saintdev.projectmna.views.common.SuperFragment;
@@ -119,6 +124,9 @@ public class WorkLogFragment extends SuperFragment {
         @Override
         public void onSuccess(int requestCode, BackgroundWork worker) {
             HttpResponseObject resp = (HttpResponseObject) worker.getResult();
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.KOREA);
+
+            int workingTime = 0;
 
             try {
                 if (resp.getResponseResultCode() == 200) {
@@ -132,18 +140,39 @@ public class WorkLogFragment extends SuperFragment {
 
                         boolean isWorking =
                                 obj.getString("staff_go_home").equals("null");
+
+                        String home =
+                                isWorking ? "근무중" : obj.getString("staff_go_home");
+
                         WorklogObject workObj = new WorklogObject(
                                 obj.getString("work_id"),
                                 obj.getString("staff_date"),
-                                obj.getString("staff_go_work"),
-                                obj.getString("staff_go_home"),
+                                ConstConverter.dateConverter(obj.getString("staff_go_work")),
+                                home,
                                 isWorking
                         );
 
                         workLogs.add(workObj);
+
+                        // 해당 근무에 대한 시간 을 구합니다.
+                        if(!isWorking) {
+                            try {
+                                Date startTime = sdf.parse(obj.getString("staff_go_work"));
+                                Date endTime = sdf.parse(obj.getString("staff_go_home"));
+
+                                // 작업 시간 (초) 단위로 가져옵니다.
+                                workingTime += ((endTime.getTime() - startTime.getTime()) / 1000);
+                            } catch(Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
                     }
 
                     works = workLogs;
+
+                    // 총 근무시간을 불러옵니다.
+                    workTime.setText(ConstConverter.getHMS(workingTime));
+                    Log.d("mna", workingTime + "초 근무함");
                 } else {
                     Toast.makeText(control, "데이터를 불러올 수 없습니다..", Toast.LENGTH_LONG).show();
                     return;
